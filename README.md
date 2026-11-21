@@ -9,24 +9,22 @@ Next.js 15 / React 19 / TypeScript. One page, exported as a static site.
 3. `npm run dev`, then open http://localhost:3000
 4. `npm run build` writes the finished static site to `out/`
 
-## Deploy to Cloudflare Pages
+## Deploy to Cloudflare (Worker with static assets)
 
-One-time setup (in this folder):
+The site is deployed as a Cloudflare **Worker** that serves the static files in `out/` (configured in `wrangler.toml`).
 
-```
-npx wrangler login        # opens the browser; sign in to the Cloudflare account that should own the site
-npx wrangler whoami       # confirm it's the right account before deploying
-```
+**Automatic deploys from GitHub (recommended).** In Cloudflare: Workers & Pages → Create → Import a repository → `fincha1224/dinku-portfolio`, with:
 
-Every deploy after that:
+- Project / Worker name: `dinku-portfolio` (must match `name` in `wrangler.toml`)
+- Build command: `npm run build`
+- Deploy command: `npx wrangler deploy`
+- Build variable: `NODE_VERSION` = `20`
 
-```
-npm run deploy
-```
+Every `git push` to `main` then rebuilds and redeploys. The site is live at `https://dinku-portfolio.<your-subdomain>.workers.dev`.
 
-This builds the site and uploads `out/` to the Pages project `dinku-portfolio`. On the first run, Wrangler offers to create the project; accept it. The site goes live at `https://dinku-portfolio.pages.dev`, and at `https://dinkuadale.com` once the custom domain is attached.
+**Custom domain.** Worker → Settings → Domains & Routes → Add → Custom domain → `dinkuadale.com`, then again for `www.dinkuadale.com`.
 
-To use your own domain, go to Cloudflare dashboard → Workers & Pages → dinku-portfolio → Custom domains → Set up a domain. Any zone in the same Cloudflare account works, for example a subdomain of atronus.com.
+**Manual deploy (fallback).** `npx wrangler login` once, then `npm run deploy`.
 
 ## Editing content
 
@@ -76,7 +74,7 @@ Open `app/data.ts`, find `insights`, and add a new entry at the top of the list:
 },
 ```
 
-Save, then commit and push. Cloudflare publishes it automatically.
+Save, then commit and push. Cloudflare rebuilds and publishes it automatically.
 
 ## Résumé
 
